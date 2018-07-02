@@ -36,7 +36,7 @@ var EditText.stringResource: String
 
     get() = text.toString() //TODO fix
 
-fun EditText.disableInput() {
+inline fun EditText.disableInput() {
     //isEnabled = false
     isFocusable = false
     isFocusableInTouchMode = false

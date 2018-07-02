@@ -1,6 +1,7 @@
 package io.upify.utils.extensions
 
 import io.upify.utils.general.Utils
+import java.lang.ref.WeakReference
 import java.text.ParseException
 import java.util.*
 
@@ -49,3 +50,7 @@ public static Date fromISO8601UTC(String dateStr) {
   return null;
 }
  */
+
+fun foo(body: WeakReference<() -> Unit>){
+    // we check here if body  is still alive
+}

@@ -1,6 +1,10 @@
 package io.upify.utils.extensions
 
+import android.support.v7.app.AppCompatActivity
+import io.upify.utils.domain.APIResult
+import io.upify.utils.domain.NetworkErrorBase
 import java.io.File
+import java.io.FileReader
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -92,6 +96,7 @@ val String.lastPathComponent: String? get() = this.split("/").last
 
 fun String?.toFile(): File? {
     this?.let {
+        FileReader(File(it)).use {  }
         return File(it)
     }
     return null
@@ -106,3 +111,32 @@ inline fun<S, T, R> Pair<S?, T?>.let(block: (S, T) -> R): R? {
 
     return null
 }
+
+inline fun<R> test(vararg values: Any?, block: (values: List<Any>) -> R): R? {
+
+    val result: MutableList<Any> = mutableListOf()
+
+    values.forEach {
+        if (it == null) return null
+        result.add(it)
+    }
+
+    return block(result)
+}
+
+inline fun <T: APIResult?, E: NetworkErrorBase?> AppCompatActivity.doSomething(noinline block: (T, E) -> Unit): (T, E) -> Unit {
+    if (this.title == "A") {
+        return block
+    }
+    return {a,b -> println("else")}
+}
+
+
+/*title = if (title == "B") "B" else "A"
+
+SessionManager.instance.start(txtStudentNumber.inputText, it, doSomething { t, e ->
+    println(t)
+    println(e)
+
+    title = "B"
+})*/

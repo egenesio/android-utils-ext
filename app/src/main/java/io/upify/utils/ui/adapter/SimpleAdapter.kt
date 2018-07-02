@@ -1,9 +1,11 @@
 package io.upify.utils.ui.adapter
 
+import android.support.v4.app.Fragment
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import io.upify.utils.domain.NetworkErrorBase
 import kotlin.properties.Delegates
 
 /**
@@ -37,6 +39,7 @@ class SimpleAdapter<T> (private val layoutsMap: Map<Int, Int>?): RecyclerView.Ad
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         listener?.invoke(viewHolder, list[position])
+
     }
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view)

@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken
 import io.upify.utils.domain.APIResult
 import io.upify.utils.domain.NetworkErrorBase
 import io.upify.utils.extensions.let
+import io.upify.utils.extensions.test
 import okhttp3.*
 import java.io.File
 import java.io.IOException
@@ -68,7 +69,8 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
 
         val block: (result: String?, error: E?) -> Unit = { response, error ->
             jsonParser.single<T>(response, endpoint.responseKey)?.let {
-                mainHandler.post { onCompletion(it, error) }
+                mainHandler.postDelayed({onCompletion(it, error)}, 5000)
+                //mainHandler.post { onCompletion(it, error) }
             } ?: run {
                 val err = error ?: error(response)
                 mainHandler.post { onCompletion(null, err) }
@@ -86,7 +88,9 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
 
         val block: (result: String?, error: E?) -> Unit = { response, error ->
             jsonParser.list<T>(response, endpoint.responseKey)?.let {
-                mainHandler.post { onCompletion(it, error) }
+
+                mainHandler.postDelayed({onCompletion(it, error)}, 5000)
+                //mainHandler.post { onCompletion(it, error) }
             } ?: run {
                 val err = error ?: error(response)
                 mainHandler.post { onCompletion(null, err) }
