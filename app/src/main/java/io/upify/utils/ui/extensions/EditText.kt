@@ -1,8 +1,14 @@
 package io.upify.utils.ui.extensions
 
 import android.content.Context
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
+import io.upify.utils.extensions.isEmailValid
 import org.jetbrains.anko.isSelectable
 
 /**
@@ -25,6 +31,8 @@ fun EditText.hideKeyboard() {
     imm.hideSoftInputFromWindow(windowToken, 0)
 }
 
+val EditText.isEmailValid: Boolean get() = inputText.isEmailValid
+
 var EditText.stringResource: String
     set(value) {
         context.resIdFrom(value)?.let {
@@ -35,6 +43,16 @@ var EditText.stringResource: String
     }
 
     get() = text.toString() //TODO fix
+
+inline fun EditText.setDoneButton(button: Button) {
+    setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->
+        return@OnEditorActionListener if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
+            hideKeyboard()
+            button.callOnClick()
+            true
+        } else false
+    })
+}
 
 inline fun EditText.disableInput() {
     //isEnabled = false

@@ -1,7 +1,7 @@
 package io.upify.utils.ui.adapter
 
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +10,7 @@ import kotlin.properties.Delegates
 /**
  * Created by egenesio on 11/04/2018.
  */
-class HeaderAdapter<T> (private val layouts: Pair<Int, Int>, private val columns: Int = 1): RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
+class HeaderAdapter<T> (private val layouts: Pair<Int, Int>, private val columns: Int = 1): androidx.recyclerview.widget.RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
 
     companion object {
         private val HEADER = 0
@@ -24,7 +24,7 @@ class HeaderAdapter<T> (private val layouts: Pair<Int, Int>, private val columns
     var listenerHeader: ((viewHolder: ViewHolder) -> Unit)? = null
     var listenerItem: ((viewHolder: ViewHolder, item: T) -> Unit)? = null
 
-    fun spanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
+    fun spanSizeLookup() = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
         override fun getSpanSize(position: Int): Int {
             return if (getItemViewType(position) == HEADER) columns else 1
         }
@@ -45,5 +45,5 @@ class HeaderAdapter<T> (private val layouts: Pair<Int, Int>, private val columns
         if (position == 0) listenerHeader?.invoke(viewHolder) else listenerItem?.invoke(viewHolder, list[position - 1])
     }
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
 }

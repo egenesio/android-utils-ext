@@ -1,14 +1,19 @@
 package io.upify.utils.ui.extensions
 
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.net.Uri
-import android.support.constraint.ConstraintLayout
-import android.support.constraint.ConstraintSet
-import android.support.v4.app.Fragment
-import android.support.v7.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.appcompat.app.AppCompatActivity
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
 import io.upify.utils.domain.NetworkErrorBase
 import io.upify.utils.extensions.completeUrl
 
@@ -48,3 +53,21 @@ fun Fragment.alertIfError(error: NetworkErrorBase?, retryBlock: (()-> Unit)? = n
 fun Fragment.alertError(messageRes: Int?= null, messageString: String? = null, errorTitle: String? = null, retryBlock: (()-> Unit)? = null, okBlock: (()-> Unit)? = null ) {
     (activity as? AppCompatActivity)?.alertError(messageRes, messageString, errorTitle, retryBlock, okBlock)
 }
+
+fun Fragment.hideKeyboard() {
+    val imm = view?.context?.getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+    imm?.hideSoftInputFromWindow(view?.windowToken, 0)
+}
+
+fun Fragment.runOnUiThread(action: () -> Unit) {
+    if (activity == null) return
+    if (activity?.isActivityDestroyed() == true) return
+
+    activity?.runOnUiThread(action)
+}
+
+fun Fragment.findLocation(timeout: Long? = null, timeInterval: Long = 0, listener: (location: Location?) -> Unit) {
+    (activity as? AppCompatActivity)?.findLocation(timeout, timeInterval, listener)
+}
+
+fun Fragment.hasAccessTo(permission: String) = (activity as? AppCompatActivity)?.hasAccessTo(permission) ?: false //ActivityCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED

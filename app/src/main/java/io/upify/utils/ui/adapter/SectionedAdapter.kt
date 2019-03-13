@@ -1,7 +1,7 @@
 package io.upify.utils.ui.adapter
 
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,7 +55,7 @@ class Section <out T, out R>(
 
 class SectionedListAdapter<T,R> (
         private val layouts: Pair<Int, Int>,
-        private val columns: Int): RecyclerView.Adapter<SectionedListAdapter.ViewHolder>() {
+        private val columns: Int): androidx.recyclerview.widget.RecyclerView.Adapter<SectionedListAdapter.ViewHolder>() {
 
     companion object {
         val TYPE_SECTION = 1
@@ -66,7 +66,7 @@ class SectionedListAdapter<T,R> (
         this.notifyDataSetChanged()
     }
 
-    fun spanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
+    fun spanSizeLookup() = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
         override fun getSpanSize(position: Int): Int {
             return if (list.getItemViewType(position) == TYPE_SECTION) columns else 1
         }
@@ -96,5 +96,5 @@ class SectionedListAdapter<T,R> (
         }
     }
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
 }

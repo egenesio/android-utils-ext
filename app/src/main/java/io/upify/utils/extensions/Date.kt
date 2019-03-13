@@ -3,6 +3,7 @@ package io.upify.utils.extensions
 import io.upify.utils.general.Utils
 import java.lang.ref.WeakReference
 import java.text.ParseException
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -26,6 +27,40 @@ val DateString.date: Date? get() {
         e.printStackTrace()
         null
     }
+}
+
+val Date.formatted: String get() {
+    val df = SimpleDateFormat(Utils.instance.strDateFormattedShort)
+    df.timeZone = TimeZone.getTimeZone(Utils.instance.strTimeZoneData)
+    return df.format(this)
+}
+
+val Date.timeFormatted: String get() {
+    val df = SimpleDateFormat(Utils.instance.strTimeFormatted)
+    df.timeZone = TimeZone.getTimeZone(Utils.instance.strTimeZoneData)
+    return df.format(this)
+}
+
+val Calendar.formatted: String get() = time.formatted
+
+val Calendar.unixTimestamp: Long get() = time.time / 1000
+
+
+fun Calendar.isToday(date: Date): Boolean {
+    val calendar = Calendar.getInstance()
+    calendar.time = date
+    return isToday(calendar)
+}
+
+fun Calendar.isToday(calendar: Calendar): Boolean {
+    return get(Calendar.DATE) == calendar.get(Calendar.DATE)
+}
+
+
+fun Long.toCalendar(): Calendar {
+    val calendar = Calendar.getInstance()
+    calendar.time = Date(this * 1000)
+    return calendar
 }
 
 /*

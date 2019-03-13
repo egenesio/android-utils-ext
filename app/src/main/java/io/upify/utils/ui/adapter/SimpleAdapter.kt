@@ -1,7 +1,7 @@
 package io.upify.utils.ui.adapter
 
-import android.support.v4.app.Fragment
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +11,7 @@ import kotlin.properties.Delegates
 /**
  * Created by egenesio on 11/04/2018.
  */
-class SimpleAdapter<T> (private val layoutsMap: Map<Int, Int>?): RecyclerView.Adapter<SimpleAdapter.ViewHolder>() {
+class SimpleAdapter<T> (private val layoutsMap: Map<Int, Int>?): androidx.recyclerview.widget.RecyclerView.Adapter<SimpleAdapter.ViewHolder>() {
 
     private var layout: Int? = null
 
@@ -42,5 +42,5 @@ class SimpleAdapter<T> (private val layoutsMap: Map<Int, Int>?): RecyclerView.Ad
 
     }
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
 }

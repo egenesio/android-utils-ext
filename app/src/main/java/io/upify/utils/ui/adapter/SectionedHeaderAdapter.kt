@@ -1,7 +1,7 @@
 package io.upify.utils.ui.adapter
 
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +12,7 @@ import kotlin.properties.Delegates
  */
 class SectionedHeaderAdapter<T,R> (
         private val layouts: Triple<Int, Int, Int>,
-        private val columns: Int): RecyclerView.Adapter<SectionedHeaderAdapter.ViewHolder>() {
+        private val columns: Int): androidx.recyclerview.widget.RecyclerView.Adapter<SectionedHeaderAdapter.ViewHolder>() {
 
     companion object {
         val TYPE_HEADER = 0
@@ -24,7 +24,7 @@ class SectionedHeaderAdapter<T,R> (
         this.notifyDataSetChanged()
     }
 
-    fun spanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
+    fun spanSizeLookup() = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
 
         override fun getSpanSize(position: Int): Int = when {
             position == 0 -> columns
@@ -70,5 +70,5 @@ class SectionedHeaderAdapter<T,R> (
         }
     }
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
 }

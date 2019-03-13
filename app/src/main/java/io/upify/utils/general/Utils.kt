@@ -2,7 +2,7 @@ package io.upify.utils.general
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -31,8 +31,10 @@ class Utils private constructor() {
 
     var errorMustLogoutBlock: ( (activity: AppCompatActivity) -> Unit ) = {}
 
-    val strTimeZoneData: String = "UTC"
-    val strDateFormat: String = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    var strTimeZoneData: String = "UTC"
+    var strDateFormat: String = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    var strDateFormattedShort: String = "dd/MM/yyyy"
+    var strTimeFormatted: String = "HH:mm"
 
     init {
 

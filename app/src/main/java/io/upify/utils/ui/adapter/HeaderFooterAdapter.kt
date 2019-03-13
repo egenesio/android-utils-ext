@@ -1,7 +1,7 @@
 package io.upify.utils.ui.adapter
 
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +11,7 @@ import kotlin.properties.Delegates
  * Created by egenesio on 11/04/2018.
  */
 class HeaderFooterAdapter<T> (private val layouts: Triple<Int, Int, Int>, private val columns: Int = 1):
-        RecyclerView.Adapter<HeaderFooterAdapter.ViewHolder>() {
+        androidx.recyclerview.widget.RecyclerView.Adapter<HeaderFooterAdapter.ViewHolder>() {
 
     companion object {
         private val HEADER = 0
@@ -27,7 +27,7 @@ class HeaderFooterAdapter<T> (private val layouts: Triple<Int, Int, Int>, privat
     var listenerItem: ((viewHolder: ViewHolder, item: T) -> Unit)? = null
     var listenerFooter: ((viewHolder: ViewHolder) -> Unit)? = null
 
-    fun spanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
+    fun spanSizeLookup() = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
         override fun getSpanSize(position: Int): Int {
             return if (getItemViewType(position) == HEADER || getItemViewType(position) == FOOTER) columns else 1
         }
@@ -60,5 +60,5 @@ class HeaderFooterAdapter<T> (private val layouts: Triple<Int, Int, Int>, privat
         }
     }
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
 }

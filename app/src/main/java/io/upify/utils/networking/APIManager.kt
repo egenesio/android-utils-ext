@@ -45,7 +45,11 @@ abstract class APIEndpointBase {
 abstract class APIClientBase<out E: NetworkErrorBase> {
 
     companion object {
-        val gson: Gson by lazy { GsonBuilder().create() }
+        val gson: Gson by lazy {
+            GsonBuilder()
+                .registerTypeAdapterFactory(LenientTypeAdapterFactory())
+                .create()
+        }
         val jsonParser: JsonParser by lazy { JsonParser() }
         val MEDIA_TYPE_JSON: MediaType by lazy { MediaType.parse("application/json; charset=utf-8")!! }
     }
@@ -69,8 +73,8 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
 
         val block: (result: String?, error: E?) -> Unit = { response, error ->
             jsonParser.single<T>(response, endpoint.responseKey)?.let {
-                mainHandler.postDelayed({onCompletion(it, error)}, 5000)
-                //mainHandler.post { onCompletion(it, error) }
+                //mainHandler.postDelayed({onCompletion(it, error)}, 5000)
+                mainHandler.post { onCompletion(it, error) }
             } ?: run {
                 val err = error ?: error(response)
                 mainHandler.post { onCompletion(null, err) }
@@ -89,8 +93,8 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
         val block: (result: String?, error: E?) -> Unit = { response, error ->
             jsonParser.list<T>(response, endpoint.responseKey)?.let {
 
-                mainHandler.postDelayed({onCompletion(it, error)}, 5000)
-                //mainHandler.post { onCompletion(it, error) }
+                //mainHandler.postDelayed({onCompletion(it, error)}, 5000)
+                mainHandler.post { onCompletion(it, error) }
             } ?: run {
                 val err = error ?: error(response)
                 mainHandler.post { onCompletion(null, err) }
@@ -218,7 +222,12 @@ inline fun <reified T: APIResult> JsonParser.single(string: String?, key: String
     string?.let {
         val element = parse(it)
         val jsonObject: JsonObject = key?.let { element.asJsonObject.get(it).asJsonObject } ?: element.asJsonObject
+
+        println("jsonObj: $jsonObject")
+
         val result = APIClientBase.gson.fromJson<T>(jsonObject, T::class.java)
+
+        println("result: $result")
 
         if (result.isValid) result else null
     }
