@@ -26,6 +26,13 @@ enum class FragmentAnim {
     }
 }
 
+inline fun FragmentManager.replaceFragment(fragment: Fragment, parent: Int, type: FragmentAnim = FragmentAnim.TYPE_NO_ANIMATION, tag: String? = null){
+    val transaction = beginTransaction().setCustomAnimations(type.inAnim, 0, 0, type.outAnim).replace(parent, fragment).addToBackStack(null)
+    //tag?.let { transaction.addToBackStack(null) }
+
+    transaction.commit()
+}
+
 inline fun FragmentManager.showFragment(fragment: Fragment, parent: Int, type: FragmentAnim = FragmentAnim.TYPE_NO_ANIMATION, tag: String? = null){
     //if (fragment.isAdded) remove(fragment, tag != null)
 

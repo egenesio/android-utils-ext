@@ -4,7 +4,12 @@ package io.upify.utils.domain
 /**
  * Created by egenesio on 11/04/2018.
  */
-interface APIResult {
+
+interface APISerializable {
+    fun postInit() {}
+}
+
+interface APIResult: APISerializable {
     val isValid: Boolean
 }
 

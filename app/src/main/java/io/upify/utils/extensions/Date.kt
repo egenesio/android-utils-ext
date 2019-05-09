@@ -53,7 +53,9 @@ fun Calendar.isToday(date: Date): Boolean {
 }
 
 fun Calendar.isToday(calendar: Calendar): Boolean {
-    return get(Calendar.DATE) == calendar.get(Calendar.DATE)
+    return get(Calendar.DATE) == calendar.get(Calendar.DATE) &&
+            get(Calendar.MONTH) == calendar.get(Calendar.MONTH) &&
+            get(Calendar.YEAR) == calendar.get(Calendar.YEAR)
 }
 
 

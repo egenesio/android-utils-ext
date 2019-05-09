@@ -12,7 +12,7 @@ import kotlin.properties.Delegates
  */
 class SectionedHeaderAdapter<T,R> (
         private val layouts: Triple<Int, Int, Int>,
-        private val columns: Int): androidx.recyclerview.widget.RecyclerView.Adapter<SectionedHeaderAdapter.ViewHolder>() {
+        private val columns: Int = 1): androidx.recyclerview.widget.RecyclerView.Adapter<SectionedHeaderAdapter.ViewHolder>() {
 
     companion object {
         val TYPE_HEADER = 0

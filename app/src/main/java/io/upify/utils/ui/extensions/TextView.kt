@@ -20,3 +20,14 @@ var TextView.stringResource: String
     }
 
     get() = text.toString() //TODO fix
+
+
+fun TextView.setTextOrGone(string: String?) {
+    if (string.isNullOrBlank()) {
+        state = Visibility.GONE
+    } else {
+        text = string
+        state = Visibility.VISIBLE
+    }
+
+}

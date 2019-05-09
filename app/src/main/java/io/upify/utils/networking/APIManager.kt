@@ -48,6 +48,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
         val gson: Gson by lazy {
             GsonBuilder()
                 .registerTypeAdapterFactory(LenientTypeAdapterFactory())
+                //.addDeserializationExclusionStrategy(SerializedNameExclusionStrategy())
                 .create()
         }
         val jsonParser: JsonParser by lazy { JsonParser() }
