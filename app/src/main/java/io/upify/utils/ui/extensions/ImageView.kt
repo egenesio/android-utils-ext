@@ -46,11 +46,11 @@ val Pair<String?, ImageType>.hasLocalFile: Boolean get() {
 fun ImageView.set(url: String?, scaleType: ImageScaleType, type: ImageType = ImageType.REMOTE, errorRes: Int? = null) {
 
 
-    Glide.with(this).load(url).into(this)
+    //Glide.with(this.context.applicationContext).load(url).into(this)
 
     val remote = when(type) {
-        ImageType.REMOTE -> Glide.with(this.context).load(url)
-        ImageType.LOCAL -> if (url != null) Glide.with(this.context).load(File(url)) else Glide.with(this.context).load(url as? String?)
+        ImageType.REMOTE -> Glide.with(this.context.applicationContext).load(url)
+        ImageType.LOCAL -> if (url != null) Glide.with(this.context.applicationContext).load(File(url)) else Glide.with(this.context).load(url as? String?)
     }
 
 

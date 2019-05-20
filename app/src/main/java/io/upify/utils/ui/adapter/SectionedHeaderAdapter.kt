@@ -11,20 +11,22 @@ import kotlin.properties.Delegates
  * Created by egenesio on 11/04/2018.
  */
 class SectionedHeaderAdapter<T,R> (
-        private val layouts: Triple<Int, Int, Int>,
-        private val columns: Int = 1): androidx.recyclerview.widget.RecyclerView.Adapter<SectionedHeaderAdapter.ViewHolder>() {
+    private val headerLayout: Int,
+    private val sectionLayout: Int,
+    private val itemLayout: Int,
+    private val columns: Int = 1): RecyclerView.Adapter<SectionedHeaderAdapter.ViewHolder>() {
 
     companion object {
-        val TYPE_HEADER = 0
-        val TYPE_SECTION = 1
-        val TYPE_ITEM = 2
+        const val TYPE_HEADER = 0
+        const val TYPE_SECTION = 1
+        const val TYPE_ITEM = 2
     }
 
     var list: List<Section<T, R>> by Delegates.observable(listOf()) { _, _, _ ->
         this.notifyDataSetChanged()
     }
 
-    fun spanSizeLookup() = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
+    fun spanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
 
         override fun getSpanSize(position: Int): Int = when {
             position == 0 -> columns
@@ -39,9 +41,9 @@ class SectionedHeaderAdapter<T,R> (
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutId = when (viewType) {
-            TYPE_HEADER -> layouts.first
-            TYPE_SECTION -> layouts.second
-            else -> layouts.third
+            TYPE_HEADER -> headerLayout
+            TYPE_SECTION -> sectionLayout
+            else -> itemLayout
         }
 
         val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
@@ -70,5 +72,5 @@ class SectionedHeaderAdapter<T,R> (
         }
     }
 
-    class ViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View): RecyclerView.ViewHolder(view)
 }

@@ -54,19 +54,20 @@ class Section <out T, out R>(
         var isOpen: Boolean)
 
 class SectionedListAdapter<T,R> (
-        private val layouts: Pair<Int, Int>,
-        private val columns: Int): androidx.recyclerview.widget.RecyclerView.Adapter<SectionedListAdapter.ViewHolder>() {
+    private val sectionLayout: Int,
+    private val itemLayout: Int,
+    private val columns: Int = 1): RecyclerView.Adapter<SectionedListAdapter.ViewHolder>() {
 
     companion object {
-        val TYPE_SECTION = 1
-        val TYPE_ITEM = 2
+        const val TYPE_SECTION = 1
+        const val TYPE_ITEM = 2
     }
 
     var list: List<Section<T, R>> by Delegates.observable(listOf()) { _, _, _ ->
         this.notifyDataSetChanged()
     }
 
-    fun spanSizeLookup() = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
+    fun spanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
         override fun getSpanSize(position: Int): Int {
             return if (list.getItemViewType(position) == TYPE_SECTION) columns else 1
         }
@@ -76,7 +77,7 @@ class SectionedListAdapter<T,R> (
     var listenerItem: ((viewHolder: ViewHolder, sectionItem: Section<T, R>, item: R) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val layoutId = if (viewType == TYPE_SECTION) layouts.first else layouts.second
+        val layoutId = if (viewType == TYPE_SECTION) sectionLayout else itemLayout
 
         val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
         return ViewHolder(view)
@@ -96,5 +97,5 @@ class SectionedListAdapter<T,R> (
         }
     }
 
-    class ViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View): RecyclerView.ViewHolder(view)
 }

@@ -10,11 +10,14 @@ import kotlin.properties.Delegates
 /**
  * Created by egenesio on 11/04/2018.
  */
-class HeaderAdapter<T> (private val layouts: Pair<Int, Int>, private val columns: Int = 1): androidx.recyclerview.widget.RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
+class HeaderAdapter<T> (
+    private val headerLayout: Int,
+    private val itemLayout: Int,
+    private val columns: Int = 1): RecyclerView.Adapter<HeaderAdapter.ViewHolder>() {
 
     companion object {
-        private val HEADER = 0
-        private val ITEM = 1
+        private const val HEADER = 0
+        private const val ITEM = 1
     }
 
     var list: List<T> by Delegates.observable(listOf()) { _, _, _ ->
@@ -22,16 +25,16 @@ class HeaderAdapter<T> (private val layouts: Pair<Int, Int>, private val columns
     }
 
     var listenerHeader: ((viewHolder: ViewHolder) -> Unit)? = null
-    var listenerItem: ((viewHolder: ViewHolder, item: T) -> Unit)? = null
+    var listenerItem: ((viewHolder: ViewHolder, item: T, position: Int) -> Unit)? = null
 
-    fun spanSizeLookup() = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
+    fun spanSizeLookup() = object : GridLayoutManager.SpanSizeLookup() {
         override fun getSpanSize(position: Int): Int {
             return if (getItemViewType(position) == HEADER) columns else 1
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val layoutId = if (viewType == HEADER) layouts.first else layouts.second
+        val layoutId = if (viewType == HEADER) headerLayout else itemLayout
 
         val view = LayoutInflater.from(parent.context).inflate(layoutId, parent, false)
         return ViewHolder(view)
@@ -42,8 +45,8 @@ class HeaderAdapter<T> (private val layouts: Pair<Int, Int>, private val columns
     override fun getItemCount(): Int = list.size + 1
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        if (position == 0) listenerHeader?.invoke(viewHolder) else listenerItem?.invoke(viewHolder, list[position - 1])
+        if (position == 0) listenerHeader?.invoke(viewHolder) else listenerItem?.invoke(viewHolder, list[position - 1], position)
     }
 
-    class ViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View): RecyclerView.ViewHolder(view)
 }
