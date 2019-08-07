@@ -15,9 +15,10 @@ class Utils private constructor() {
     companion object {
         val instance: Utils by lazy { Utils() }
 
-        fun init(context: Context, buildType: String): Utils {
+        fun init(context: Context, buildType: String, applicationId: String): Utils {
             instance.context = context.applicationContext
             instance.buildType = buildType
+            instance.applicationId = applicationId
 
             return instance
         }
@@ -27,6 +28,9 @@ class Utils private constructor() {
         private set
 
     var buildType: String? = null
+        private set
+
+    var applicationId: String? = null
         private set
 
     var errorTitle: String = ""

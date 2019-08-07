@@ -34,11 +34,6 @@ fun AppCompatActivity.openUrl(url: String?) {
     url?.let {startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.completeUrl)))}
 }
 
-fun Context.openUrl(url: String?) {
-    //url?.let{ browse(it)}
-    url?.let {startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.completeUrl)))}
-}
-
 fun AppCompatActivity.stringOrNull(res: Int?): String? {
     res?.let { return getString(it) }
     return null

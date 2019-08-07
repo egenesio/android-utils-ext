@@ -1,7 +1,11 @@
 package com.egenesio.utils.ui.extensions
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import com.egenesio.utils.domain.APIResult
+import com.egenesio.utils.extensions.completeUrl
+import com.egenesio.utils.general.Utils
 import com.egenesio.utils.networking.APIClientBase
 import java.lang.Exception
 import java.nio.charset.StandardCharsets
@@ -14,6 +18,11 @@ import java.nio.charset.StandardCharsets
  * Context
  */
 
+fun Context.openUrl(url: String?) {
+    //url?.let{ browse(it)}
+    url?.let {startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it.completeUrl)))}
+}
+
 fun Context.stringFrom(string: String): String? {
     return resIdFrom(string)?.let {
         resources.getString(it)
@@ -23,7 +32,7 @@ fun Context.stringFrom(string: String): String? {
 }
 
 fun Context.resIdFrom(string: String): Int? {
-    val resId = resources.getIdentifier(string, "string", "") //TODO get package
+    val resId = resources.getIdentifier(string, "string", Utils.instance.applicationId)
     return if (resId != 0) resId else null
 }
 

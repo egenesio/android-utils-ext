@@ -1,5 +1,6 @@
 package com.egenesio.utils.ui.extensions
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.egenesio.utils.R
 
 /**
@@ -9,16 +10,16 @@ import com.egenesio.utils.R
  * SWIPE REFRESH LAYOUT
  */
 
-fun androidx.swiperefreshlayout.widget.SwipeRefreshLayout.init() {
+fun SwipeRefreshLayout.init() {
     //setColorSchemeResources(R.color.colorPrimaryDark, R.color.colorPrimary, R.color.colorAccent)
     setTag(R.id.tag_init, true)
 }
 
-fun androidx.swiperefreshlayout.widget.SwipeRefreshLayout.show() {
+fun SwipeRefreshLayout.show() {
     if ((getTag(R.id.tag_init) as? Boolean) != true) init()
     if (!isRefreshing) isRefreshing = true
 }
 
-fun androidx.swiperefreshlayout.widget.SwipeRefreshLayout.hide() {
+fun SwipeRefreshLayout.hide() {
     if (isRefreshing) isRefreshing = false
 }
