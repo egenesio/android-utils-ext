@@ -86,7 +86,7 @@ fun AppCompatActivity.hideKeyboard() {
 
 fun AppCompatActivity.hasAccessTo(permission: String) = ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
-fun androidx.fragment.app.FragmentActivity.isActivityDestroyed(): Boolean {
+fun FragmentActivity.isActivityDestroyed(): Boolean {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 && isDestroyed) {
         return true
     }
@@ -96,8 +96,8 @@ fun androidx.fragment.app.FragmentActivity.isActivityDestroyed(): Boolean {
 
 val AppCompatActivity.MAX_SCREEN_BRIGHTNESS: Int get() = 255
 
-//Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);  //this will set the automatic mode on
-//Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);  //this will set the manual mode (set the automatic mode off)
+//Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC);  //this will load the automatic mode on
+//Settings.System.putInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_MANUAL);  //this will load the manual mode (load the automatic mode off)
 
 var AppCompatActivity.screenBrightnessMode: Int
     get() = Settings.System.getInt(contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC)

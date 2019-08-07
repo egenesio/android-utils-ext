@@ -138,7 +138,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             else -> {}
         }
 
-        if (endpoint.isPrivate) builder.addHeader(headerAccessToken, "$accessToken")
+        if (endpoint.isPrivate && accessToken != null) builder.addHeader(headerAccessToken, "$accessToken")
 
         extraHeaders?.forEach {
             builder.addHeader(it.first, it.second)
@@ -186,7 +186,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
                 .url(baseURL + endpoint.method)
                 .method(endpoint.httpMethod.method, requestBody)
 
-        if (endpoint.isPrivate) builder.addHeader(headerAccessToken, "$accessToken")
+        if (endpoint.isPrivate && accessToken != null) builder.addHeader(headerAccessToken, "$accessToken")
 
         extraHeaders?.forEach {
             builder.addHeader(it.first, it.second)

@@ -11,7 +11,7 @@ import kotlin.properties.Delegates
 /**
  * Created by egenesio on 11/04/2018.
  */
-class SimpleAdapter<T> (private val layoutsMap: Map<Int, Int>?): androidx.recyclerview.widget.RecyclerView.Adapter<SimpleAdapter.ViewHolder>() {
+class SimpleAdapter<T> (private val layoutsMap: Map<Int, Int>?): RecyclerView.Adapter<SimpleAdapter.ViewHolder>() {
 
     private var layout: Int? = null
 
@@ -23,7 +23,7 @@ class SimpleAdapter<T> (private val layoutsMap: Map<Int, Int>?): androidx.recycl
         this.notifyDataSetChanged()
     }
 
-    var listener: ((viewHolder: ViewHolder, item: T) -> Unit)? = null
+    var listener: ((viewHolder: ViewHolder, item: T, position: Int) -> Unit)? = null
     var onGetItemViewType: ((item: T) -> Int)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,9 +38,9 @@ class SimpleAdapter<T> (private val layoutsMap: Map<Int, Int>?): androidx.recycl
     override fun getItemCount(): Int = list.size
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        listener?.invoke(viewHolder, list[position])
+        listener?.invoke(viewHolder, list[position], position)
 
     }
 
-    class ViewHolder(view: View): androidx.recyclerview.widget.RecyclerView.ViewHolder(view)
+    class ViewHolder(view: View): RecyclerView.ViewHolder(view)
 }

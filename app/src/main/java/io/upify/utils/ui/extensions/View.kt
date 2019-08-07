@@ -27,3 +27,7 @@ var View.state: Visibility
         View.VISIBLE -> Visibility.VISIBLE
         else -> Visibility.VISIBLE
     }
+
+fun View.visibleIf(boolean: Boolean) {
+    this.state = if (boolean) Visibility.VISIBLE else Visibility.GONE
+}

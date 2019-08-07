@@ -8,6 +8,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import io.upify.utils.extensions.isDateValid
 import io.upify.utils.extensions.isEmailValid
 import org.jetbrains.anko.isSelectable
 
@@ -32,6 +33,9 @@ fun EditText.hideKeyboard() {
 }
 
 val EditText.isEmailValid: Boolean get() = inputText.isEmailValid
+val EditText.isDateValid: Boolean get() = inputText.isDateValid
+fun EditText.isDateValid(customFormat: String): Boolean = inputText.isDateValid(customFormat)
+val EditText.isIntValid: Boolean get() = inputText.toIntOrNull() != null
 
 var EditText.stringResource: String
     set(value) {

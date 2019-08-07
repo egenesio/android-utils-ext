@@ -1,5 +1,6 @@
 package io.upify.utils.extensions
 
+import android.annotation.SuppressLint
 import io.upify.utils.general.Utils
 import java.lang.ref.WeakReference
 import java.text.ParseException
@@ -20,28 +21,33 @@ val DateString.timestamp: Long? get() {
     return date?.let { it.time / 1000 } ?: null
 }
 
-val DateString.date: Date? get() {
-    return try {
-        Utils.instance.dateFormat.parse(this)
-    } catch (e: ParseException) {
-        e.printStackTrace()
-        null
-    }
+val DateString.date: Date? get() = date()
+
+@SuppressLint("SimpleDateFormat")
+fun DateString.date(customFormat: String? = Utils.instance.strDateFormat): Date? = try {
+    SimpleDateFormat(customFormat).parse(this)
+} catch (e: ParseException) {
+    e.printStackTrace()
+    null
+}
+
+@SuppressLint("SimpleDateFormat")
+fun Date.formatted(customFormat: String? = null): String {
+    val df = SimpleDateFormat(customFormat ?: Utils.instance.strDateFormattedShort)
+    df.timeZone = TimeZone.getTimeZone(Utils.instance.strTimeZoneData)
+    return df.format(this)
 }
 
 val Date.formatted: String get() {
-    val df = SimpleDateFormat(Utils.instance.strDateFormattedShort)
-    df.timeZone = TimeZone.getTimeZone(Utils.instance.strTimeZoneData)
-    return df.format(this)
+    return this.formatted()
 }
 
 val Date.timeFormatted: String get() {
-    val df = SimpleDateFormat(Utils.instance.strTimeFormatted)
-    df.timeZone = TimeZone.getTimeZone(Utils.instance.strTimeZoneData)
-    return df.format(this)
+    return this.formatted(Utils.instance.strTimeFormatted)
 }
 
 val Calendar.formatted: String get() = time.formatted
+fun Calendar.formatted(customFormat: String? = null): String = time.formatted(customFormat)
 
 val Calendar.unixTimestamp: Long get() = time.time / 1000
 

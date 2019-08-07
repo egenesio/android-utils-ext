@@ -2,6 +2,7 @@ package io.upify.utils.extensions
 
 import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
+import io.upify.utils.BuildConfig
 import io.upify.utils.domain.APIResult
 import io.upify.utils.domain.NetworkErrorBase
 import java.io.File
@@ -108,6 +109,14 @@ val String.isEmailValid: Boolean get() {
     return ptr.matcher(this).matches()
 }
 
+val String.isDateValid: Boolean get() {
+    return this.date != null
+}
+
+fun String.isDateValid(customFormat: String): Boolean {
+    return this.date(customFormat) != null
+}
+
 val String.completeUrl: String get() {
     if (this.startsWith("http://") || this.startsWith("https://")) return this
     return "http://" + this
@@ -124,6 +133,8 @@ fun String?.toFile(): File? {
     }
     return null
 }
+
+fun String.formatWith(value: Any) = String.format(this, value)
 
 inline fun<S, T, R> Pair<S?, T?>.let(block: (S, T) -> R): R? {
     first?.let { fi ->

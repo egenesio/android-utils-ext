@@ -3,9 +3,9 @@ package io.upify.utils.ui.utils
 import android.view.Gravity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.transition.Fade
 import androidx.transition.Slide
 import androidx.transition.Transition
-import io.upify.utils.ui.extensions.FragmentAnim
 import io.upify.utils.ui.extensions.lastFragment
 import io.upify.utils.ui.extensions.replaceFragment
 
@@ -23,7 +23,20 @@ data class FragmentNavigationGroup(
     fun replaceWith(fragment: Fragment) {
         fragmentManager.replaceFragment(fragment, this)
     }
+}
 
+enum class ModalNavigationType {
+    SLIDE, FADE;
+
+    val enterTransition get() = when(this) {
+        SLIDE -> Slide(Gravity.BOTTOM)
+        FADE -> Fade()
+    }
+
+    val returnTransition get() = when(this) {
+        SLIDE -> Slide(Gravity.BOTTOM)
+        FADE -> Fade()
+    }
 }
 
 data class ModalNavigationGroup(
@@ -31,10 +44,15 @@ data class ModalNavigationGroup(
     val overLayout: Int,
     val key: String) {
 
-    fun presentRoot(fragment: Fragment) {
+    companion object {
+        private val DEFAULT_TYPE = ModalNavigationType.SLIDE
+    }
+
+    fun presentRoot(fragment: Fragment, withType: ModalNavigationType? = null) {
         if (fragment.isAdded) return
 
-        fragment.enterTransition = Slide(Gravity.BOTTOM)
+        val type = withType ?: DEFAULT_TYPE
+        fragment.enterTransition = type.enterTransition
 
         fragmentManager.beginTransaction()
             .add(overLayout, fragment, key)
@@ -58,9 +76,9 @@ data class ModalNavigationGroup(
         fragmentManager.popBackStackImmediate()
     }
 
-    fun dismiss() {
-        fragmentManager.lastFragment?.returnTransition = Slide(Gravity.BOTTOM)
-
+    fun dismiss(withType: ModalNavigationType? = null) {
+        val type = withType ?: DEFAULT_TYPE
+        fragmentManager.lastFragment?.returnTransition = type.returnTransition
         fragmentManager.popBackStackImmediate(key, FragmentManager.POP_BACK_STACK_INCLUSIVE)
     }
 

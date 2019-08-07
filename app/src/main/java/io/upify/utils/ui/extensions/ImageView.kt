@@ -43,7 +43,7 @@ val Pair<String?, ImageType>.hasLocalFile: Boolean get() {
     }
 }
 
-fun ImageView.set(url: String?, scaleType: ImageScaleType, type: ImageType = ImageType.REMOTE, errorRes: Int? = null) {
+fun ImageView.load(url: String?, scaleType: ImageScaleType = ImageScaleType.FIT_CENTER, type: ImageType = ImageType.REMOTE, errorRes: Int? = null) {
 
 
     //Glide.with(this.context.applicationContext).load(url).into(this)

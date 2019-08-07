@@ -1,5 +1,6 @@
 package io.upify.utils.ui.extensions
 
+import android.view.View
 import android.widget.TextView
 
 /**
@@ -29,5 +30,15 @@ fun TextView.setTextOrGone(string: String?) {
         text = string
         state = Visibility.VISIBLE
     }
+}
 
+fun TextView.setTextOrGoneWith(string: String?, vararg views: View) {
+    if (string.isNullOrBlank()) {
+        state = Visibility.GONE
+        views.forEach { it.state = Visibility.GONE }
+    } else {
+        text = string
+        state = Visibility.VISIBLE
+        views.forEach { it.state = Visibility.VISIBLE }
+    }
 }
