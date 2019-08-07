@@ -33,8 +33,7 @@ abstract class APIEndpointBase {
     abstract val method: String
     abstract val body: Any?
     abstract val responseKey: String?
-    abstract val fileToUpload: File?
-    abstract val fileFieldName: String?
+    abstract val files: Map<String,File>?
 
     override fun toString(): String {
         return "HTTPMethod: [$httpMethod], isPrivate: [$isPrivate], method: [$method], body: [$body]"
@@ -80,8 +79,8 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             }
         }
 
-        Pair(endpoint.fileToUpload, endpoint.fileFieldName).let { file, name ->
-            requestWithFile(file, name, endpoint, block)
+        endpoint.files?.let {
+            requestWithFiles(it, endpoint, block)
         } ?: run {
             request(endpoint, block)
         }
@@ -98,31 +97,39 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             }
         }
 
-        Pair(endpoint.fileToUpload, endpoint.fileFieldName).let { file, name ->
-            requestWithFile(file, name, endpoint, block)
+        endpoint.files?.let {
+            requestWithFiles(it, endpoint, block)
         } ?: run {
             request(endpoint, block)
         }
 
     }
 
-    inline fun requestWithFile(
-            file: File,
-            fileFieldName: String,
+    inline fun requestWithFiles(
+            files: Map<String,File>,
             endpoint: APIEndpointBase,
             crossinline onCompletion: (response: String?, error: E?) -> Unit) {
 
         if (logEnabled) println("requestWithFile: ${endpoint.method}")
         if (logEnabled) println("body: ${gson.toJson(endpoint.body)}")
 
-        val requestBodyBuilder = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart(fileFieldName, file.name, RequestBody.create(MediaType.parse("image/jpeg"), file))
-
+        val requestBodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
         val json = jsonParser.parse(gson.toJson(endpoint.body))
 
-        json.asJsonObject.entrySet().forEach {
-            requestBodyBuilder.addFormDataPart(it.key, it.value.asString)
+        files.entries.forEach {
+            requestBodyBuilder.addFormDataPart(it.key, it.value.name, RequestBody.create(MediaType.parse("image/jpeg"), it.value))
+        }
+
+        when {
+            json.isJsonObject -> {
+                json.asJsonObject.entrySet().forEach {
+                    requestBodyBuilder.addFormDataPart(it.key, it.value.asString)
+                }
+            }
+            json.isJsonArray -> {
+                requestBodyBuilder.addFormDataPart("imagedata", json.asJsonArray.toString()) //TODO FIX : fix field
+            }
+            else -> {}
         }
 
         val builder = Request.Builder()
@@ -140,28 +147,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             builder.addHeader(it.first, it.second)
         }
 
-        httpClient.newCall(builder.build()).enqueue(object: okhttp3.Callback {
-
-            override fun onFailure(call: okhttp3.Call?, e: IOException?) {
-                if (logEnabled) println(e)
-                onCompletion(null, error())
-            }
-
-            override fun onResponse(call: okhttp3.Call?, response: okhttp3.Response?) {
-                if (logEnabled) println(response)
-                response?.let {
-
-                    val bodyString = it.body()?.string()
-                    if (logEnabled) println(bodyString)
-
-                    if (it.isSuccessful) {
-                        onCompletion(bodyString, null)
-                    } else {
-                        onCompletion(null, error(bodyString, it.code()))
-                    }
-                } ?: onCompletion(null, error())
-            }
-        })
+        doCall(builder.build(), onCompletion)
     }
 
     inline fun request(
@@ -188,14 +174,18 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             builder.addHeader(it.first, it.second)
         }
 
-        httpClient.newCall(builder.build()).enqueue(object: okhttp3.Callback {
+        doCall(builder.build(), onCompletion)
+    }
 
-            override fun onFailure(call: okhttp3.Call?, e: IOException?) {
+    inline fun doCall(request: Request, crossinline onCompletion: (response: String?, error: E?) -> Unit) {
+        httpClient.newCall(request).enqueue(object: Callback {
+
+            override fun onFailure(call: Call?, e: IOException?) {
                 if (logEnabled) println(e)
                 onCompletion(null, error())
             }
 
-            override fun onResponse(call: okhttp3.Call?, response: okhttp3.Response?) {
+            override fun onResponse(call: Call?, response: Response?) {
                 if (logEnabled) println(response)
                 response?.let {
 
@@ -208,10 +198,8 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
                         onCompletion(null, error(bodyString, it.code()))
                     }
                 } ?: onCompletion(null, error())
-
             }
         })
-
     }
 }
 
