@@ -74,7 +74,6 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
 
         val block: (result: String?, error: E?) -> Unit = { response, error ->
             jsonParser.single<T>(response, endpoint.responseKey)?.let {
-                //mainHandler.postDelayed({onCompletion(it, error)}, 5000)
                 mainHandler.post { onCompletion(it, error) }
             } ?: run {
                 val err = error ?: error(response)
@@ -93,8 +92,6 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
 
         val block: (result: String?, error: E?) -> Unit = { response, error ->
             jsonParser.list<T>(response, endpoint.responseKey)?.let {
-
-                //mainHandler.postDelayed({onCompletion(it, error)}, 5000)
                 mainHandler.post { onCompletion(it, error) }
             } ?: run {
                 val err = error ?: error(response)
