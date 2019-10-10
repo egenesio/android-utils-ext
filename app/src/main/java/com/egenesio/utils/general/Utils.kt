@@ -40,8 +40,10 @@ class Utils private constructor() {
 
     var errorMustLogoutBlock: ( (activity: AppCompatActivity) -> Unit ) = {}
 
-    var strTimeZoneData: String = "UTC"
     var strDateFormat: String = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    var strDateTimeZone: String = "UTC"
+
+    var strTimeZoneData: String = "UTC"
     var strDateFormattedShort: String = "dd/MM/yyyy"
     var strTimeFormatted: String = "HH:mm"
 

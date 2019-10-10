@@ -25,7 +25,9 @@ val DateString.date: Date? get() = date()
 
 @SuppressLint("SimpleDateFormat")
 fun DateString.date(customFormat: String? = Utils.instance.strDateFormat): Date? = try {
-    SimpleDateFormat(customFormat).parse(this)
+    val sdf = SimpleDateFormat(customFormat)
+    sdf.timeZone = TimeZone.getTimeZone(Utils.instance.strDateTimeZone)
+    sdf.parse(this)
 } catch (e: ParseException) {
     e.printStackTrace()
     null
