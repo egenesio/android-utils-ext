@@ -28,6 +28,7 @@ enum class HTTPMethod(val method: String){
 
 abstract class APIEndpointBase {
 
+    abstract val apiVersion: String?
     abstract val httpMethod: HTTPMethod
     abstract val isPrivate: Boolean
     abstract val method: String
@@ -54,6 +55,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
     }
 
     abstract val baseURL: String
+    abstract val apiVersion: String?
     abstract val headerAccessToken: String?
     abstract val accessToken: String?
     abstract val logEnabled: Boolean
@@ -67,6 +69,11 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
     val httpClient: OkHttpClient = OkHttpClient.Builder()
             .connectTimeout(8, TimeUnit.SECONDS)
             .build()
+
+    open fun requestUrl(endpoint: APIEndpointBase): String {
+        val apiVersion = endpoint.apiVersion ?: this.apiVersion ?: ""
+        return baseURL + apiVersion + endpoint.method
+    }
 
     inline fun <reified T: APIResult> single(endpoint: APIEndpointBase, crossinline onCompletion: (result: T?, error: E?) -> Unit){
 
@@ -132,8 +139,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             else -> {}
         }
 
-        val builder = Request.Builder()
-                .url(baseURL + endpoint.method)
+        val builder = Request.Builder().url(requestUrl(endpoint))
 
         when(endpoint.httpMethod) {
             HTTPMethod.POST -> builder.post(requestBodyBuilder.build())
@@ -165,7 +171,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
         }
 
         val builder = Request.Builder()
-                .url(baseURL + endpoint.method)
+                .url(requestUrl(endpoint))
                 .method(endpoint.httpMethod.method, requestBody)
 
         if (endpoint.isPrivate && accessToken != null) builder.addHeader(headerAccessToken, "$accessToken")
