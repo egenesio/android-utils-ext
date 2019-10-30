@@ -47,7 +47,7 @@ private class NotNullPreferenceProperty<T>(private val name: String, private val
     private fun findPreference(name: String, default: T): T = with(prefs) {
         val res: Any = when (default) {
             is Long -> getLong(name, default)
-            is String -> getString(name, default)
+            is String -> getString(name, default) ?: ""
             is Int -> getInt(name, default)
             is Boolean -> getBoolean(name, default)
             is Float -> getFloat(name, default)
@@ -94,7 +94,7 @@ private class NullablePreferenceProperty<T>(private val name: String, private va
             }
             String::class.createType() -> {
                 val saved = getString(name, "")
-                if (saved.isEmpty()) default else saved
+                if (saved.isNullOrEmpty()) default else saved
 
             }
             Int::class.createType() -> {

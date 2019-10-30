@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import android.widget.DatePicker
+import java.lang.NullPointerException
 import java.util.*
 
 typealias OnDateSelectedListener = (date: Calendar) -> Unit
@@ -34,13 +35,14 @@ class DatePickerDialog: DialogFragment(), android.app.DatePickerDialog.OnDateSet
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val context = context ?: throw NullPointerException()
         val c = previousDate ?: Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         // Create a new instance of DatePickerDialog and return it
-        val a = android.app.DatePickerDialog(activity, this, year, month, day)
+        val a = android.app.DatePickerDialog(context, this, year, month, day)
 
         a.datePicker.minDate = minDate?.timeInMillis ?: 0
 

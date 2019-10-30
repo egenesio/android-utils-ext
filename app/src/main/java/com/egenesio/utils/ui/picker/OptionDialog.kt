@@ -121,7 +121,7 @@ class OptionAdapter(
 
     var dialogType: OptionDialogType = OptionDialogType.DEFAULT
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val holder: ViewHolder
 
         val view: View
