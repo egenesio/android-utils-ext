@@ -22,7 +22,7 @@ class HeaderFooterAdapter<T> (private val layouts: Triple<Int, Int, Int>, privat
     }
 
     var listenerHeader: ((viewHolder: ViewHolder) -> Unit)? = null
-    var listenerItem: ((viewHolder: ViewHolder, item: T) -> Unit)? = null
+    var listenerItem: ((viewHolder: ViewHolder, item: T, position: Int) -> Unit)? = null
     var listenerFooter: ((viewHolder: ViewHolder) -> Unit)? = null
 
     fun spanSizeLookup() = object : androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup() {
@@ -54,7 +54,7 @@ class HeaderFooterAdapter<T> (private val layouts: Triple<Int, Int, Int>, privat
         when(position){
             0 -> listenerHeader?.invoke(viewHolder)
             itemCount -1 -> listenerFooter?.invoke(viewHolder)
-            else -> listenerItem?.invoke(viewHolder, list[position - 1])
+            else -> listenerItem?.invoke(viewHolder, list[position - 1], position)
         }
     }
 

@@ -36,8 +36,8 @@ class SectionedHeaderAdapter<T,R> (
     }
 
     var listenerHeader: ((viewHolder: ViewHolder) -> Unit)? = null
-    var listenerSection: ((viewHolder: ViewHolder, item: Section<T, R>) -> Unit)? = null
-    var listenerItem: ((viewHolder: ViewHolder, sectionItem: Section<T, R>, item: R) -> Unit)? = null
+    var listenerSection: ((viewHolder: ViewHolder, item: Section<T, R>, position: Int) -> Unit)? = null
+    var listenerItem: ((viewHolder: ViewHolder, sectionItem: Section<T, R>, item: R, position: Int) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutId = when (viewType) {
@@ -63,11 +63,11 @@ class SectionedHeaderAdapter<T,R> (
             aPosition == 0 -> listenerHeader?.invoke(viewHolder)
             list.getItemViewType(position) == TYPE_SECTION -> {
                 val sectionItem = list.getSectionItem(position)
-                sectionItem?.let { listenerSection?.invoke(viewHolder, it) }
+                sectionItem?.let { listenerSection?.invoke(viewHolder, it, aPosition) }
             }
             else -> {
                 val item = list.getItem(position)
-                item?.let { listenerItem?.invoke(viewHolder, it.first, it.second) }
+                item?.let { listenerItem?.invoke(viewHolder, it.first, it.second, aPosition) }
             }
         }
     }

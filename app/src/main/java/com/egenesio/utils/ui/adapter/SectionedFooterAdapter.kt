@@ -35,8 +35,8 @@ class SectionedFooterAdapter<T,R> (
     }
 
     var listenerFooter: ((viewHolder: ViewHolder) -> Unit)? = null
-    var listenerSection: ((viewHolder: ViewHolder, item: Section<T, R>) -> Unit)? = null
-    var listenerItem: ((viewHolder: ViewHolder, sectionItem: Section<T, R>, item: R) -> Unit)? = null
+    var listenerSection: ((viewHolder: ViewHolder, item: Section<T, R>, position: Int) -> Unit)? = null
+    var listenerItem: ((viewHolder: ViewHolder, sectionItem: Section<T, R>, item: R, position: Int) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val layoutId = when (viewType) {
@@ -62,11 +62,11 @@ class SectionedFooterAdapter<T,R> (
             aPosition == itemCount -1 -> listenerFooter?.invoke(viewHolder)
             list.getItemViewType(aPosition) == TYPE_SECTION -> {
                 val sectionItem = list.getSectionItem(aPosition)
-                sectionItem?.let { listenerSection?.invoke(viewHolder, it) }
+                sectionItem?.let { listenerSection?.invoke(viewHolder, it, aPosition) }
             }
             else -> {
                 val item = list.getItem(aPosition)
-                item?.let { listenerItem?.invoke(viewHolder, it.first, it.second) }
+                item?.let { listenerItem?.invoke(viewHolder, it.first, it.second, aPosition) }
             }
         }
     }
