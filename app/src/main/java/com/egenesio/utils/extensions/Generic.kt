@@ -7,21 +7,21 @@ val Any?.isNotNull get() = this != null
 
 
 inline fun onDebug(f: ()-> Unit) {
-    val buildType = Utils.instance.buildType ?: return
+    val buildType = Utils.buildType ?: return
     if (buildType == "debug") {
         f()
     }
 }
 
 inline fun notOnDebug(f: ()-> Unit) {
-    val buildType = Utils.instance.buildType ?: return
+    val buildType = Utils.buildType ?: return
     if (buildType != "debug") {
         f()
     }
 }
 
 inline fun onRelease(f: ()-> Unit) {
-    val buildType = Utils.instance.buildType ?: return
+    val buildType = Utils.buildType ?: return
     if (buildType == "release") {
         f()
     }

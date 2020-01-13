@@ -32,7 +32,7 @@ fun Context.stringFrom(string: String): String? {
 }
 
 fun Context.resIdFrom(string: String): Int? {
-    val resId = resources.getIdentifier(string, "string", Utils.instance.applicationId)
+    val resId = resources.getIdentifier(string, "string", Utils.applicationId)
     return if (resId != 0) resId else null
 }
 
@@ -54,8 +54,7 @@ fun Context.stringFromRaw(rawId: Int): String? {
 }
 
 inline fun <reified T: APIResult> Context.parseJsonFromRaw(rawId: Int): T? {
-    val gson = APIClientBase.gson
     return stringFromRaw(rawId)?.let {
-        gson.fromJson<T>(it, T::class.java)
+        Utils.gson.fromJson<T>(it, T::class.java)
     }
 }

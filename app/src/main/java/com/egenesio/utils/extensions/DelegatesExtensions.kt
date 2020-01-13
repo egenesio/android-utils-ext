@@ -32,7 +32,7 @@ class PreferenceProperty<T>(private val name: String, private val default: T) {
 private class NotNullPreferenceProperty<T>(private val name: String, private val default: T) : ReadWriteProperty<Any, T> {
 
     private val prefs: SharedPreferences by lazy {
-        Utils.instance.context.getSharedPreferences(PreferenceProperty.PREFERENCES_NAME, Context.MODE_PRIVATE)
+        Utils.context.getSharedPreferences(PreferenceProperty.PREFERENCES_NAME, Context.MODE_PRIVATE)
     }
 
     override fun getValue(thisRef: Any, property: KProperty<*>): T {
@@ -73,7 +73,7 @@ private class NotNullPreferenceProperty<T>(private val name: String, private val
 private class NullablePreferenceProperty<T>(private val name: String, private val default: T?) : ReadWriteProperty<Any, T?> {
 
     private val prefs: SharedPreferences by lazy {
-        Utils.instance.context.getSharedPreferences(PreferenceProperty.PREFERENCES_NAME, Context.MODE_PRIVATE)
+        Utils.context.getSharedPreferences(PreferenceProperty.PREFERENCES_NAME, Context.MODE_PRIVATE)
     }
 
     override fun getValue(thisRef: Any, property: KProperty<*>): T? {

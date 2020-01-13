@@ -44,7 +44,7 @@ fun AppCompatActivity.alertIfError(error: NetworkErrorBase?, retryBlock: (()-> U
 
     val block: (() -> Unit)? = if (error.mustLogout) {
         {
-            Utils.instance.errorMustLogoutBlock.invoke(this)
+            Utils.errorMustLogoutBlock.invoke(this)
         }
     } else {
         okBlock
@@ -55,13 +55,13 @@ fun AppCompatActivity.alertIfError(error: NetworkErrorBase?, retryBlock: (()-> U
 
 fun AppCompatActivity.alertError(messageRes: Int?= null, messageString: String? = null, errorTitle: String? = null, retryBlock: (()-> Unit)? = null, okBlock: (()-> Unit)? = null ) {
     alert {
-        title = errorTitle ?: Utils.instance.errorTitle
-        message = messageString ?: stringOrNull(messageRes) ?: Utils.instance.errorMessage
-        positiveButton(Utils.instance.errorOkButton) {
+        title = errorTitle ?: Utils.errorTitle
+        message = messageString ?: stringOrNull(messageRes) ?: Utils.errorMessage
+        positiveButton(Utils.errorOkButton) {
             okBlock?.invoke()
         }
         retryBlock?.let { block ->
-            neutralPressed(Utils.instance.errorRetryButton) {
+            neutralPressed(Utils.errorRetryButton) {
                 it.dismiss()
                 block.invoke()
             }

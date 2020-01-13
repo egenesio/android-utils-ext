@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 13
-        versionName "1.0.12"
+        versionCode 14
+        versionName "1.0.13"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -36,9 +36,9 @@ dependencies {
     api "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
 
     api 'androidx.appcompat:appcompat:1.1.0-rc01'
-    api 'com.google.android.material:material:1.0.0'
+    api 'com.google.android.material:material:1.0.0-rc01'
     api 'androidx.cardview:cardview:1.0.0'
-    api 'androidx.constraintlayout:constraintlayout:2.0.0-beta3'
+    api 'androidx.constraintlayout:constraintlayout:2.0.0-beta4'
 
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'

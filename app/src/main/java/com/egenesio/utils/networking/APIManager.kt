@@ -5,11 +5,11 @@ package com.egenesio.utils.networking
  */
 import android.os.Handler
 import android.os.Looper.getMainLooper
-import com.google.gson.*
-import com.google.gson.reflect.TypeToken
 import com.egenesio.utils.domain.APIResult
 import com.egenesio.utils.domain.NetworkErrorBase
-import com.egenesio.utils.extensions.let
+import com.egenesio.utils.general.Utils
+import com.egenesio.utils.general.listWithRaw
+import com.egenesio.utils.general.singleWithRaw
 import okhttp3.*
 import java.io.File
 import java.io.IOException
@@ -44,13 +44,6 @@ abstract class APIEndpointBase {
 abstract class APIClientBase<out E: NetworkErrorBase> {
 
     companion object {
-        val gson: Gson by lazy {
-            GsonBuilder()
-                .registerTypeAdapterFactory(LenientTypeAdapterFactory())
-                //.addDeserializationExclusionStrategy(SerializedNameExclusionStrategy())
-                .create()
-        }
-        val jsonParser: JsonParser by lazy { JsonParser() }
         val MEDIA_TYPE_JSON: MediaType by lazy { MediaType.parse("application/json; charset=utf-8")!! }
     }
 
@@ -75,14 +68,39 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
         return baseURL + apiVersion + endpoint.method
     }
 
-    inline fun <reified T: APIResult> single(endpoint: APIEndpointBase, crossinline onCompletion: (result: T?, error: E?) -> Unit){
-
+    inline fun <reified T: APIResult> singleWithRawJson(endpoint: APIEndpointBase, crossinline onCompletion: (rawJson: String?, result: T?, error: E?) -> Unit){
         val block: (result: String?, error: E?) -> Unit = { response, error ->
-            jsonParser.single<T>(response, endpoint.responseKey)?.let {
-                mainHandler.post { onCompletion(it, error) }
+            Utils.jsonParser.singleWithRaw<T>(response, endpoint.responseKey)?.let { pair ->
+                if (logEnabled) println("mapped: ${pair.second}")
+                mainHandler.post { onCompletion(pair.first, pair.second, error) }
             } ?: run {
                 val err = error ?: error(response)
-                mainHandler.post { onCompletion(null, err) }
+                mainHandler.post { onCompletion(null, null, err) }
+            }
+        }
+
+        endpoint.files?.let {
+            requestWithFiles(it, endpoint, block)
+        } ?: run {
+            request(endpoint, block)
+        }
+    }
+
+    inline fun <reified T: APIResult> single(endpoint: APIEndpointBase, crossinline onCompletion: (result: T?, error: E?) -> Unit){
+        singleWithRawJson<T>(endpoint) { _, result, error ->
+            onCompletion(result, error)
+        }
+    }
+
+    inline fun <reified T: APIResult> listWithRawJson(endpoint: APIEndpointBase, crossinline onCompletion: (rawJson: String?, result: List<T>?, error: E?) -> Unit) {
+
+        val block: (result: String?, error: E?) -> Unit = { response, error ->
+            Utils.jsonParser.listWithRaw<T>(response, endpoint.responseKey)?.let { pair ->
+                if (logEnabled) println("mapped: ${pair.second}")
+                mainHandler.post { onCompletion(pair.first, pair.second, error) }
+            } ?: run {
+                val err = error ?: error(response)
+                mainHandler.post { onCompletion(response, null, err) }
             }
         }
 
@@ -94,22 +112,9 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
     }
 
     inline fun <reified T: APIResult> list(endpoint: APIEndpointBase, crossinline onCompletion: (result: List<T>?, error: E?) -> Unit) {
-
-        val block: (result: String?, error: E?) -> Unit = { response, error ->
-            jsonParser.list<T>(response, endpoint.responseKey)?.let {
-                mainHandler.post { onCompletion(it, error) }
-            } ?: run {
-                val err = error ?: error(response)
-                mainHandler.post { onCompletion(null, err) }
-            }
+        listWithRawJson<T>(endpoint) { _, result, error ->
+            onCompletion(result, error)
         }
-
-        endpoint.files?.let {
-            requestWithFiles(it, endpoint, block)
-        } ?: run {
-            request(endpoint, block)
-        }
-
     }
 
     inline fun requestWithFiles(
@@ -118,10 +123,10 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             crossinline onCompletion: (response: String?, error: E?) -> Unit) {
 
         if (logEnabled) println("requestWithFile: ${endpoint.method}")
-        if (logEnabled) println("body: ${gson.toJson(endpoint.body)}")
+        if (logEnabled) println("body: ${Utils.gson.toJson(endpoint.body)}")
 
         val requestBodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
-        val json = jsonParser.parse(gson.toJson(endpoint.body))
+        val json = Utils.jsonParser.parse(Utils.gson.toJson(endpoint.body))
 
         files.entries.forEach {
             requestBodyBuilder.addFormDataPart(it.key, it.value.name, RequestBody.create(MediaType.parse("image/jpeg"), it.value))
@@ -161,9 +166,9 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             crossinline onCompletion: (response: String?, error: E?) -> Unit) {
 
         if (logEnabled) println("request: ${endpoint.method}")
-        if (logEnabled) println("body: ${gson.toJson(endpoint.body)}")
+        if (logEnabled) println("body: ${Utils.gson.toJson(endpoint.body)}")
 
-        var requestBody: RequestBody? = if(endpoint.body != null) RequestBody.create(MEDIA_TYPE_JSON, gson.toJson(endpoint.body)) else null
+        var requestBody: RequestBody? = if(endpoint.body != null) RequestBody.create(MEDIA_TYPE_JSON, Utils.gson.toJson(endpoint.body)) else null
 
         when(endpoint.httpMethod) {
             HTTPMethod.POST, HTTPMethod.PUT -> requestBody = requestBody ?: RequestBody.create(MEDIA_TYPE_JSON, "{}")
@@ -188,7 +193,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
 
             override fun onFailure(call: Call?, e: IOException?) {
                 if (logEnabled) println(e)
-                onCompletion(null, error())
+                onCompletion(null, error(code = 503))
             }
 
             override fun onResponse(call: Call?, response: Response?) {
@@ -207,40 +212,4 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             }
         })
     }
-}
-
-inline fun <reified T: APIResult> JsonParser.single(string: String?, key: String? = null): T? = try {
-    string?.let {
-        val element = parse(it)
-        val jsonObject: JsonObject = key?.let { element.asJsonObject.get(it).asJsonObject } ?: element.asJsonObject
-
-        println("jsonObj: $jsonObject")
-
-        val result = APIClientBase.gson.fromJson<T>(jsonObject, T::class.java)
-
-        println("result: $result")
-
-        if (result.isValid) result else null
-    }
-} catch (e: Exception){
-    e.printStackTrace()
-    null
-}
-
-inline fun <reified T: APIResult> JsonParser.list(string: String?, key: String? = null): List<T>? = try {
-    string?.let {
-
-        val json = parse(it)
-        val jsonArray: JsonArray = key?.let { json.asJsonObject.get(it).asJsonArray } ?: json.asJsonArray
-        val list = APIClientBase.gson.fromJson<List<T>>(jsonArray, object : TypeToken<List<T>>(){}.type)
-
-        when {
-            list.isEmpty() -> list
-            list.first().isValid -> list
-            else -> null
-        }
-    }
-} catch (e: Exception){
-    e.printStackTrace()
-    null
 }

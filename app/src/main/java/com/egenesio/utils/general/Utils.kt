@@ -3,6 +3,8 @@ package com.egenesio.utils.general
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -10,21 +12,19 @@ import java.util.*
 /**
  * Created by egenesio on 12/04/2018.
  */
-class Utils private constructor() {
+object Utils {
 
-    companion object {
-        val instance: Utils by lazy { Utils() }
+    //val instance: Utils by lazy { Utils() }
 
-        fun init(context: Context, buildType: String, applicationId: String): Utils {
-            instance.context = context.applicationContext
-            instance.buildType = buildType
-            instance.applicationId = applicationId
+    fun init(context: Context, buildType: String, applicationId: String): Utils {
+        this.context = context.applicationContext
+        this.buildType = buildType
+        this.applicationId = applicationId
 
-            return instance
-        }
+        return this
     }
 
-    lateinit var context: Context
+    lateinit var context: Context //TODO remove
         private set
 
     var buildType: String? = null
@@ -47,10 +47,11 @@ class Utils private constructor() {
     var strDateFormattedShort: String = "dd/MM/yyyy"
     var strTimeFormatted: String = "HH:mm"
 
-    init {
-
-    }
-
     private val timeZoneData: TimeZone by lazy { TimeZone.getTimeZone(strTimeZoneData) }
     val dateFormat: SimpleDateFormat by lazy { SimpleDateFormat(strDateFormat).apply { timeZone = timeZoneData } }
+
+
+    val gson: Gson by lazy { JsonUtils.buildGson() }
+    val jsonParser: JsonParser by lazy { JsonUtils.buildJsonParser() }
+
 }

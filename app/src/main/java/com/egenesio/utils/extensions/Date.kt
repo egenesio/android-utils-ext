@@ -24,9 +24,9 @@ val DateString.timestamp: Long? get() {
 val DateString.date: Date? get() = date()
 
 @SuppressLint("SimpleDateFormat")
-fun DateString.date(customFormat: String? = Utils.instance.strDateFormat): Date? = try {
+fun DateString.date(customFormat: String? = Utils.strDateFormat): Date? = try {
     val sdf = SimpleDateFormat(customFormat)
-    sdf.timeZone = TimeZone.getTimeZone(Utils.instance.strDateTimeZone)
+    sdf.timeZone = TimeZone.getTimeZone(Utils.strDateTimeZone)
     sdf.parse(this)
 } catch (e: ParseException) {
     e.printStackTrace()
@@ -35,8 +35,8 @@ fun DateString.date(customFormat: String? = Utils.instance.strDateFormat): Date?
 
 @SuppressLint("SimpleDateFormat")
 fun Date.formatted(customFormat: String? = null): String {
-    val df = SimpleDateFormat(customFormat ?: Utils.instance.strDateFormattedShort)
-    df.timeZone = TimeZone.getTimeZone(Utils.instance.strTimeZoneData)
+    val df = SimpleDateFormat(customFormat ?: Utils.strDateFormattedShort)
+    df.timeZone = TimeZone.getTimeZone(Utils.strTimeZoneData)
     return df.format(this)
 }
 
@@ -45,7 +45,7 @@ val Date.formatted: String get() {
 }
 
 val Date.timeFormatted: String get() {
-    return this.formatted(Utils.instance.strTimeFormatted)
+    return this.formatted(Utils.strTimeFormatted)
 }
 
 val Calendar.formatted: String get() = time.formatted
