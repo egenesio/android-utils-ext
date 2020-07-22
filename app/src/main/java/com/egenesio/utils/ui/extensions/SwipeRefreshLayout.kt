@@ -1,6 +1,6 @@
 package com.egenesio.utils.ui.extensions
 
-import android.support.v4.widget.SwipeRefreshLayout
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.egenesio.utils.R
 
 /**
