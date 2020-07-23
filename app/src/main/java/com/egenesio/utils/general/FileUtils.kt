@@ -54,7 +54,17 @@ object FileUtils {
 
     fun deleteFolder(folderPath: String): Boolean {
         val folder = internalFolder(folderPath) ?: return false
-        return folder.delete()
+        return deleteRecursive(folder)
+    }
+
+    private fun deleteRecursive(fileOrDirectory: File): Boolean {
+        if (fileOrDirectory.isDirectory) {
+            val children = fileOrDirectory.listFiles() ?: arrayOf()
+            for (child in children) {
+                deleteRecursive(child)
+            }
+        }
+        return fileOrDirectory.delete()
     }
 
     private fun internalFolder(path: String): File? {
