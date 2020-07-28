@@ -135,7 +135,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
         when {
             json.isJsonObject -> {
                 json.asJsonObject.entrySet().forEach {
-                    requestBodyBuilder.addFormDataPart(it.key, it.value.asString)
+                    requestBodyBuilder.addFormDataPart(it.key, it.value.toString())
                 }
             }
             json.isJsonArray -> {
