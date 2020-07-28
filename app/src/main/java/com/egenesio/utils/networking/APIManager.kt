@@ -135,7 +135,19 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
         when {
             json.isJsonObject -> {
                 json.asJsonObject.entrySet().forEach {
-                    requestBodyBuilder.addFormDataPart(it.key, it.value.toString())
+
+                    val ele = it.value
+                    if (ele.isJsonPrimitive) {
+                        if (ele.asJsonPrimitive.isBoolean)
+                            requestBodyBuilder.addFormDataPart(it.key, ele.asBoolean.toString())
+                        if (ele.asJsonPrimitive.isString)
+                            requestBodyBuilder.addFormDataPart(it.key, ele.asString)
+                        if (ele.asJsonPrimitive.isNumber){
+                            requestBodyBuilder.addFormDataPart(it.key, ele.asNumber.toString())
+                        }
+                    } else {
+                        requestBodyBuilder.addFormDataPart(it.key, ele.toString())
+                    }
                 }
             }
             json.isJsonArray -> {
