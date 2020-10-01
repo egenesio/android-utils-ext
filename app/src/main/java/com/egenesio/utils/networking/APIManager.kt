@@ -5,6 +5,7 @@ package com.egenesio.utils.networking
  */
 import android.os.Handler
 import android.os.Looper.getMainLooper
+import com.egenesio.utils.domain.APIRequestData
 import com.egenesio.utils.domain.APIResult
 import com.egenesio.utils.domain.NetworkErrorBase
 import com.egenesio.utils.general.Utils
@@ -55,7 +56,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
     abstract val extraHeaders: List<Pair<String,String>>?
 
     abstract val errorKey: String?
-    abstract fun error(response: String? = null, code: Int? = null): E
+    abstract fun error(requestData: APIRequestData? = null, response: String? = null, code: Int? = null): E
 
     val mainHandler get() = Handler(getMainLooper())
 
@@ -74,7 +75,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
                 if (logEnabled) println("mapped: ${pair.second}")
                 mainHandler.post { onCompletion(pair.first, pair.second, error) }
             } ?: run {
-                val err = error ?: error(response)
+                val err = error ?: error(response = response)
                 mainHandler.post { onCompletion(null, null, err) }
             }
         }
@@ -99,7 +100,7 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
                 if (logEnabled) println("mapped: ${pair.second}")
                 mainHandler.post { onCompletion(pair.first, pair.second, error) }
             } ?: run {
-                val err = error ?: error(response)
+                val err = error ?: error(response = response)
                 mainHandler.post { onCompletion(response, null, err) }
             }
         }
@@ -156,11 +157,13 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             else -> {}
         }
 
-        val builder = Request.Builder().url(requestUrl(endpoint))
+        val requestUrl = requestUrl(endpoint)
+        val requestBody = requestBodyBuilder.build()
+        val builder = Request.Builder().url(requestUrl)
 
         when(endpoint.httpMethod) {
-            HTTPMethod.POST -> builder.post(requestBodyBuilder.build())
-            HTTPMethod.PUT -> builder.put(requestBodyBuilder.build())
+            HTTPMethod.POST -> builder.post(requestBody)
+            HTTPMethod.PUT -> builder.put(requestBody)
             else -> {}
         }
 
@@ -170,7 +173,8 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             builder.addHeader(it.first, it.second)
         }
 
-        doCall(builder.build(), onCompletion)
+        val requestData = requestData(requestUrl, endpoint.httpMethod.name, requestBody.toString())
+        doCall(builder.build(),requestData, onCompletion)
     }
 
     inline fun request(
@@ -187,8 +191,9 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             else -> {}
         }
 
+        val requestUrl = requestUrl(endpoint)
         val builder = Request.Builder()
-                .url(requestUrl(endpoint))
+                .url(requestUrl)
                 .method(endpoint.httpMethod.method, requestBody)
 
         if (endpoint.isPrivate && accessToken != null) builder.addHeader(headerAccessToken, "$accessToken")
@@ -197,15 +202,21 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
             builder.addHeader(it.first, it.second)
         }
 
-        doCall(builder.build(), onCompletion)
+        val requestData = requestData(requestUrl, endpoint.httpMethod.name, requestBody?.toString() ?: "")
+        doCall(builder.build(), requestData, onCompletion)
     }
 
-    inline fun doCall(request: Request, crossinline onCompletion: (response: String?, error: E?) -> Unit) {
+    open fun requestData(requestUrl: String, requestMethod: String, requestBody: String) =
+        APIRequestData(requestUrl, requestMethod, requestBody)
+
+    inline fun doCall(request: Request, requestData: APIRequestData,
+                      crossinline onCompletion: (response: String?, error: E?) -> Unit) {
+
         httpClient.newCall(request).enqueue(object: Callback {
 
             override fun onFailure(call: Call?, e: IOException?) {
                 if (logEnabled) println(e)
-                onCompletion(null, error(code = 503))
+                onCompletion(null, error(requestData, code = 503))
             }
 
             override fun onResponse(call: Call?, response: Response?) {
@@ -218,9 +229,9 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
                     if (it.isSuccessful) {
                         onCompletion(bodyString, null)
                     } else {
-                        onCompletion(null, error(bodyString, it.code()))
+                        onCompletion(null, error(requestData, bodyString, it.code()))
                     }
-                } ?: onCompletion(null, error())
+                } ?: onCompletion(null, error(requestData))
             }
         })
     }
