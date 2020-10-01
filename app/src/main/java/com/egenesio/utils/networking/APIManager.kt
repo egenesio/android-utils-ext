@@ -221,10 +221,13 @@ abstract class APIClientBase<out E: NetworkErrorBase> {
 
             override fun onResponse(call: Call?, response: Response?) {
                 if (logEnabled) println(response)
+
                 response?.let {
 
                     val bodyString = it.body()?.string()
                     if (logEnabled) println(bodyString)
+
+                    requestData.response = bodyString ?: ""
 
                     if (it.isSuccessful) {
                         onCompletion(bodyString, null)

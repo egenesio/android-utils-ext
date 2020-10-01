@@ -24,4 +24,4 @@ data class APIRequestData(
     val requestURL: String,
     val requestMethod: String,
     val requestBody: String = "",
-    val response: String = "")
+    var response: String = "")
