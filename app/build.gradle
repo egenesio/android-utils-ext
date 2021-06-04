@@ -2,6 +2,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
+ext {
+    publish_group_id = "com.egenesio"
+    publish_artifact_id = "android-utils"
+}
+
 android {
     compileSdkVersion 29
     defaultConfig {
@@ -21,6 +26,10 @@ android {
                 proguardFile 'proguard-rules.pro'
             }
         }
+    }
+
+    compileOptions {
+        kotlinOptions.freeCompilerArgs += ['-module-name', "$publish_group_id.$publish_artifact_id"]
     }
 }
 
